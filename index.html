@@ -1,69 +1,1109 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>S!MPLO IVECO - Edición Iveco Only</title>
-<style>
-:root{--red:#c41212;--dark:#1a1a1a;--gray:#2a2a2a;--light:#e5e5e5;--yellow:#ffcc00}
-*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,Roboto,Arial}
-body{background:#111;color:#eee;display:flex;height:100vh}
-#sidebar{width:300px;background:var(--dark);border-right:2px solid var(--red);display:flex;flex-direction:column}
-#logo{background:var(--red);padding:15px;text-align:center;font-weight:900;letter-spacing:2px;font-size:20px}
-#search{padding:10px}
-#search input{width:100%;padding:10px;background:#222;border:1px solid #444;color:#fff;border-radius:4px}
-#models{overflow-y:auto;flex:1}
-.model{padding:10px 15px;border-bottom:1px solid #222;cursor:pointer}
-.model:hover{background:#222}
-.model b{color:var(--yellow);font-size:13px;display:block}
-.model span{font-size:11px;color:#999}
-.model.active{background:var(--red);color:#fff}
-.model.active span{color:#fff}
-#main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-#topbar{background:var(--gray);padding:10px 20px;display:flex;gap:10px;align-items:center;border-bottom:1px solid #333}
-.tab{padding:8px 16px;background:#333;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600}
-.tab.active{background:var(--red);color:#fff}
-#content{flex:1;overflow-y:auto;padding:20px;background:#0e0e0e}
-.card{background:#1e1e1e;border:1px solid #333;border-radius:8px;padding:15px;margin-bottom:15px}
-.card h3{color:var(--yellow);margin-bottom:10px;font-size:14px;text-transform:uppercase;letter-spacing:1px}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{background:#222;color:#aaa;padding:8px;text-align:left}
-td{padding:7px 8px;border-bottom:1px solid #222}
-.pin-c{background:#c41212;color:#fff;padding:2px 6px;border-radius:4px;font-size:11px}
-.diagram{width:100%;height:260px;background:repeating-linear-gradient(0deg,#111 0 20px,#151515 20px 40px);border:1px dashed #444;display:flex;align-items:center;justify-content:center;color:#666;font-family:monospace}
-.badge{display:inline-block;padding:3px 8px;background:#222;border:1px solid #444;border-radius:4px;font-size:11px;margin-right:5px}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T.R.I DATA - Manuales | Pinouts | IVECO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef8ff',
+                            100: '#d8f0ff',
+                            400: '#38bdf8',
+                            500: '#0088ff',
+                            600: '#0066cc',
+                            700: '#0052a3',
+                            800: '#0a192f',
+                            900: '#030712',
+                            card: '#0f172a',
+                            border: '#1e293b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030712;
+            color: #f3f4f6;
+        }
+        .bg-glass {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, rgba(3,7,18,0.95) 0%, rgba(10,25,47,0.85) 60%, rgba(0,102,204,0.3) 100%), 
+                        url('https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #090d16;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #0066cc;
+        }
+    </style>
 </head>
-<body>
-<div id="sidebar">
-<div id="logo">S!MPLO IVECO v2026</div>
-<div id="search"><input id="q" placeholder="Buscar: 70C17, EDC16C39, Stralis..."></div>
-<div id="models"></div>
-</div>
-<div id="main">
-<div id="topbar">
-<div class="tab active" data-t="pinout">PINOUT ECU</div>
-<div class="tab" data-t="wiring">DIAGRAMA</div>
-<div class="tab" data-t="data">DATOS SENSORES</div>
-<div class="tab" data-t="osc">OSCILOGRAMA</div>
-<div class="tab" data-t="torque">DISTRIBUCIÓN</div>
-</div>
-<div id="content"></div>
-</div>
-<script>
-const db=[
-{id:'daily35s14',name:'DAILY 35S14 / 35C14',sub:'2.3 F1AE0481H 136CV - EDC16C39 - 2006/2014',ecu:'Bosch EDC16C39 0 281 011 536',pinout:[
-[1,'Inyector 1','OUT Low Side'],[2,'Inyector 4','OUT Low Side'],[3,'Inyector 2','OUT'],[4,'Inyector 3','OUT'],[13,'Masa ECU','GND'],[22,'+12V Bat','30'],[23,'+12V Contacto','15'],[53,'CAN H','2.6V'],[54,'CAN L','2.3V'],[67,'Masa potencia','GND'],[78,'Sensor CKP +','IN'],[79,'Sensor CMP','IN'],[85,'Válvula EGR','PWM']
-],sensors:{'FRP Ralentí':'280-320 bar','MAF Ralentí':'8-12 g/s','ECT':'85-90°C','Boost':'1.0-1.4 bar'}},
-{id:'daily70c17',name:'DAILY 70C17 / 55-170',sub:'3.0 F1CE3481 170CV - EDC17C52 - 2012/2019',ecu:'Bosch EDC17C52 0 281 020 150',pinout:[
-[1,'Masa','GND'],[2,'Inyector 1','OUT'],[3,'Inyector 2','OUT'],[4,'Inyector 3','OUT'],[5,'Inyector 4','OUT'],[22,'+BATT','30'],[35,'CAN H','BUS'],[36,'CAN L','BUS'],[44,'K-Line','Diag'],[61,'+5V Ref','OUT'],[68,'CKP Señal','IN'],[69,'FRP Señal','0.5-4.5V']
-],sensors:{'FRP Ralentí':'300 bar','FRP Plena':'1600 bar','MAF':'12-18 g/s','VGT':'75-85%'}},
-{id:'daily70c18',name:'DAILY 70C18 / 70-170 Euro6',sub:'3.0 F1CFL411 180CV - EDC17CV41 - 2019/2026',ecu:'Bosch EDC17CV41 0 281 020 251',pinout:[
-[1,'GND 1','Masa'],[2,'GND 2','Masa'],[10,'Iny 1 High','OUT'],[11,'Iny 2 High','OUT'],[23,'+30 Bat','12V'],[24,'+15 Contacto','12V'],[50,'CAN H J1939','BUS'],[51,'CAN L J1939','BUS'],[60,'AdBlue Heater','OUT'],[88,'NOx Sensor','CAN']
-],sensors:{'AdBlue Presión':'5.5 bar','DPF ΔP':'<20 mbar ralentí','EGT':'180-220°C ralentí','Urea Temp':'OK'}},
-{id:'stralis450',name:'STRALIS 450 / 500 Cursor 13',sub:'Cursor 13 450CV - EDC7UC31 - 2014/2023',ecu:'Bosch EDC7UC31 0 281 020 089',pinout:[
-[1,'Conector A - Inyectores','6x OUT'],[2,'Conector B - Cabina','CAN + 30/15'],[3,'Conector C - Sensores','FRP/ECT/Boost'],[A1,'FRP','0-1800 bar'],[B12,'CAN H',''],[B13,'CAN L','']
-],sensors:{'FRP Ralentí':'350 bar','Boost':'2.8 bar max','Rail Limiter':'1800 bar','ECT':'80-95°C'}},
-{id:'tector',name:'TECTOR 170-300 / 240E28',sub:'NEF 6 6.7L - EDC7C4 / EDC17CV56',ecu:'Bosch EDC7C4 / EDC17CV56',pinout:[
-[1,'Inyector 1-6','Low Side'],[10,'+30','Bat'],[20,'Masa','GND'],[40,'CAN H/L','Bus']
-],sensors:{'FRP':'300-
+<body class="h-screen flex flex-col overflow-hidden bg-gray-950 text-gray-100 antialiased selection:bg-blue-600 selection:text-white">
+
+    <!-- TOP NAVIGATION HEADER -->
+    <header class="h-16 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-4 sm:px-6 shrink-0 z-30">
+        <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('inicio')">
+            <div class="bg-blue-600 text-white p-2 rounded-lg flex items-center justify-center font-bold">
+                <i class="fa-solid fa-truck-front text-xl"></i>
+            </div>
+            <div>
+                <div class="flex items-center gap-1.5 font-black text-xl tracking-wider leading-none text-white">
+                    <span>T.R.I</span>
+                    <span class="text-blue-500">DATA</span>
+                </div>
+                <div class="text-[10px] text-gray-400 font-medium tracking-widest uppercase mt-0.5">MANUALES | PINOUTS | IVECO</div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <!-- Global Search Trigger Mobile -->
+            <button onclick="document.getElementById('searchInput').focus()" class="md:hidden text-gray-400 hover:text-white p-2">
+                <i class="fa-solid fa-magnifying-glass text-lg"></i>
+            </button>
+            
+            <!-- Notifications -->
+            <button class="relative text-gray-400 hover:text-white p-2 transition-colors">
+                <i class="fa-regular fa-bell text-lg"></i>
+                <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+            </button>
+
+            <!-- User Profile Dropdown -->
+            <div class="flex items-center gap-3 pl-3 border-l border-gray-800">
+                <div class="w-9 h-9 rounded-full bg-blue-900/60 border border-blue-500/40 text-blue-300 flex items-center justify-center font-semibold text-sm">
+                    <i class="fa-solid fa-user-gear"></i>
+                </div>
+                <div class="hidden sm:block text-left">
+                    <div class="text-sm font-semibold text-gray-200 leading-tight">Usuario</div>
+                    <div class="text-xs text-blue-400 font-medium flex items-center gap-1">
+                        Admin <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN WORKSPACE -->
+    <div class="flex flex-1 overflow-hidden relative">
+
+        <!-- SIDEBAR NAVIGATION -->
+        <aside id="sidebar" class="w-64 bg-gray-900 border-r border-gray-800 flex flex-col justify-between shrink-0 transition-all duration-300 z-20 overflow-y-auto custom-scrollbar">
+            <div class="p-4 space-y-6">
+                <!-- Navigation Links -->
+                <nav class="space-y-1">
+                    <button onclick="switchTab('inicio')" id="nav-inicio" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all bg-blue-600 text-white shadow-lg shadow-blue-600/30">
+                        <i class="fa-solid fa-house w-5 text-center text-base"></i>
+                        <span>Inicio</span>
+                    </button>
+                    <button onclick="switchTab('manuales')" id="nav-manuales" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800/60 transition-all">
+                        <i class="fa-solid fa-book-open w-5 text-center text-base"></i>
+                        <span>Manuales</span>
+                    </button>
+                    <button onclick="switchTab('pinouts')" id="nav-pinouts" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800/60 transition-all">
+                        <i class="fa-solid fa-microchip w-5 text-center text-base"></i>
+                        <span>Pinouts</span>
+                    </button>
+                    <button onclick="switchTab('esquemas')" id="nav-esquemas" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800/60 transition-all">
+                        <i class="fa-solid fa-bolt w-5 text-center text-base"></i>
+                        <span>Esquemas Eléctricos</span>
+                    </button>
+                    <button onclick="switchTab('diagramas')" id="nav-diagramas" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800/60 transition-all">
+                        <i class="fa-solid fa-diagram-project w-5 text-center text-base"></i>
+                        <span>Diagramas</span>
+                    </button>
+                    <button onclick="switchTab('favoritos')" id="nav-favoritos" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800/60 transition-all">
+                        <i class="fa-solid fa-star w-5 text-center text-base text-amber-400"></i>
+                        <span>Favoritos</span>
+                        <span id="favCountBadge" class="ml-auto text-xs bg-gray-800 text-amber-400 font-bold px-2 py-0.5 rounded-full border border-amber-500/20">0</span>
+                    </button>
+                    <button onclick="switchTab('historial')" id="nav-historial" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800/60 transition-all">
+                        <i class="fa-solid fa-clock-rotate-left w-5 text-center text-base"></i>
+                        <span>Historial</span>
+                    </button>
+                </nav>
+
+                <!-- IVECO Models Group -->
+                <div class="pt-4 border-t border-gray-800">
+                    <div class="px-3 text-xs font-bold text-gray-400 tracking-wider uppercase mb-2">IVECO</div>
+                    <div class="space-y-1">
+                        <button onclick="filterByModel('Daily')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-gray-300 hover:bg-gray-800/50 hover:text-white transition-colors group">
+                            <span class="flex items-center gap-3">
+                                <i class="fa-solid fa-van-shuttle w-5 text-center text-gray-500 group-hover:text-blue-400"></i>
+                                Daily
+                            </span>
+                            <i class="fa-solid fa-chevron-right text-xs text-gray-600 group-hover:text-gray-400"></i>
+                        </button>
+                        <button onclick="filterByModel('Eurocargo')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-gray-300 hover:bg-gray-800/50 hover:text-white transition-colors group">
+                            <span class="flex items-center gap-3">
+                                <i class="fa-solid fa-truck-moving w-5 text-center text-gray-500 group-hover:text-blue-400"></i>
+                                Eurocargo
+                            </span>
+                            <i class="fa-solid fa-chevron-right text-xs text-gray-600 group-hover:text-gray-400"></i>
+                        </button>
+                        <button onclick="filterByModel('Stralis')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-gray-300 hover:bg-gray-800/50 hover:text-white transition-colors group">
+                            <span class="flex items-center gap-3">
+                                <i class="fa-solid fa-truck-front w-5 text-center text-gray-500 group-hover:text-blue-400"></i>
+                                Stralis
+                            </span>
+                            <i class="fa-solid fa-chevron-right text-xs text-gray-600 group-hover:text-gray-400"></i>
+                        </button>
+                        <button onclick="filterByModel('Tector')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-gray-300 hover:bg-gray-800/50 hover:text-white transition-colors group">
+                            <span class="flex items-center gap-3">
+                                <i class="fa-solid fa-truck w-5 text-center text-gray-500 group-hover:text-blue-400"></i>
+                                Tector
+                            </span>
+                            <i class="fa-solid fa-chevron-right text-xs text-gray-600 group-hover:text-gray-400"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Promo Sidebar Banner -->
+            <div class="p-4 border-t border-gray-800/80">
+                <div class="relative bg-gradient-to-br from-blue-950/60 via-slate-900 to-gray-950 border border-blue-500/30 rounded-xl p-4 overflow-hidden">
+                    <div class="relative z-10">
+                        <div class="text-xs font-bold text-blue-400 tracking-wider flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-blue-500 inline-block animate-ping"></span>
+                            T.R.I DATA
+                        </div>
+                        <div class="text-sm font-semibold text-gray-100 mt-1">Toda la información técnica que necesitás, en un solo lugar.</div>
+                    </div>
+                    <i class="fa-solid fa-truck-monster text-6xl text-blue-500/10 absolute -bottom-2 -right-2"></i>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CONTENT AREA -->
+        <main class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6 space-y-6">
+
+            <!-- Dynamic Search / Filter Header Banner (Hero) -->
+            <section class="hero-gradient border border-gray-800 rounded-2xl p-6 md:p-8 relative overflow-hidden shadow-2xl">
+                <div class="max-w-3xl space-y-4">
+                    <span class="text-xs font-bold tracking-wider text-blue-400 uppercase bg-blue-950/80 border border-blue-500/30 px-3 py-1 rounded-full inline-block">
+                        BIENVENIDO A
+                    </span>
+                    <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight flex items-center gap-3">
+                        T.R.I <span class="text-blue-500">DATA</span>
+                    </h1>
+                    <p class="text-gray-300 text-sm md:text-base leading-relaxed font-normal max-w-2xl">
+                        Manuales técnicos, pinouts, esquemas y toda la información que necesitás para los vehículos <span class="text-white font-semibold">IVECO</span>.
+                    </p>
+
+                    <!-- Search Box -->
+                    <div class="pt-2">
+                        <div class="flex flex-col sm:flex-row gap-2 bg-gray-900/90 p-2 rounded-xl border border-gray-700/80 shadow-2xl backdrop-blur-md">
+                            <div class="relative flex-1 flex items-center px-3">
+                                <i class="fa-solid fa-magnifying-glass text-gray-400 mr-3 text-base"></i>
+                                <input type="text" id="searchInput" onkeyup="handleSearch()" placeholder="Buscar manual, pinout, modelo, sistema..." 
+                                       class="w-full bg-transparent text-white placeholder-gray-400 text-sm focus:outline-none">
+                                <button onclick="clearSearch()" id="clearBtn" class="hidden text-gray-500 hover:text-white px-2">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                            <button onclick="triggerSearch()" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-6 py-2.5 rounded-lg transition-all shadow-md flex items-center justify-center gap-2 text-sm shrink-0">
+                                <span>Buscar</span>
+                            </button>
+                        </div>
+
+                        <!-- Popular Tags -->
+                        <div class="flex flex-wrap items-center gap-2 mt-3 text-xs text-gray-400">
+                            <span class="text-blue-400 font-semibold flex items-center gap-1">
+                                <i class="fa-solid fa-fire text-amber-500"></i> Búsquedas populares:
+                            </span>
+                            <button onclick="setSearch('Daily 55C16')" class="bg-gray-800/80 hover:bg-blue-900/40 hover:text-blue-300 border border-gray-700 px-2.5 py-1 rounded-md transition-colors">Daily 55C16</button>
+                            <button onclick="setSearch('EDC16')" class="bg-gray-800/80 hover:bg-blue-900/40 hover:text-blue-300 border border-gray-700 px-2.5 py-1 rounded-md transition-colors">EDC16</button>
+                            <button onclick="setSearch('Pinout ECU')" class="bg-gray-800/80 hover:bg-blue-900/40 hover:text-blue-300 border border-gray-700 px-2.5 py-1 rounded-md transition-colors">Pinout ECU</button>
+                            <button onclick="setSearch('Caja de fusibles')" class="bg-gray-800/80 hover:bg-blue-900/40 hover:text-blue-300 border border-gray-700 px-2.5 py-1 rounded-md transition-colors">Caja de fusibles</button>
+                            <button onclick="setSearch('Esquema eléctrico')" class="bg-gray-800/80 hover:bg-blue-900/40 hover:text-blue-300 border border-gray-700 px-2.5 py-1 rounded-md transition-colors">Esquema eléctrico</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4 CATEGORY CARDS SECTION -->
+            <section id="categoryCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Card 1: Manuales -->
+                <div onclick="switchTab('manuales')" class="group cursor-pointer bg-slate-900/80 border border-slate-800 hover:border-blue-500/50 rounded-xl p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-950/50 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-blue-950/60 border border-blue-500/30 text-blue-400 flex items-center justify-center text-2xl mb-4 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                            <i class="fa-solid fa-book"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">Manuales</h3>
+                        <p class="text-gray-400 text-xs leading-relaxed">Accedé a manuales de taller, reparación y mantenimiento.</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800/60 flex items-center text-blue-400 text-sm font-semibold group-hover:translate-x-1 transition-transform">
+                        <span>Ver manuales</span>
+                        <i class="fa-solid fa-circle-arrow-right ml-auto text-lg"></i>
+                    </div>
+                </div>
+
+                <!-- Card 2: Pinouts -->
+                <div onclick="switchTab('pinouts')" class="group cursor-pointer bg-slate-900/80 border border-slate-800 hover:border-blue-500/50 rounded-xl p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-950/50 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-blue-950/60 border border-blue-500/30 text-blue-400 flex items-center justify-center text-2xl mb-4 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                            <i class="fa-solid fa-diagram-nested"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">Pinouts</h3>
+                        <p class="text-gray-400 text-xs leading-relaxed">Diagramas de conectores, ECU y módulos electrónicos.</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800/60 flex items-center text-blue-400 text-sm font-semibold group-hover:translate-x-1 transition-transform">
+                        <span>Explorar pinouts</span>
+                        <i class="fa-solid fa-circle-arrow-right ml-auto text-lg"></i>
+                    </div>
+                </div>
+
+                <!-- Card 3: Esquemas Eléctricos -->
+                <div onclick="switchTab('esquemas')" class="group cursor-pointer bg-slate-900/80 border border-slate-800 hover:border-blue-500/50 rounded-xl p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-950/50 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-blue-950/60 border border-blue-500/30 text-blue-400 flex items-center justify-center text-2xl mb-4 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                            <i class="fa-solid fa-bolt font-bold"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">Esquemas Eléctricos</h3>
+                        <p class="text-gray-400 text-xs leading-relaxed">Diagramas completos por sistema y por modelo IVECO.</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800/60 flex items-center text-blue-400 text-sm font-semibold group-hover:translate-x-1 transition-transform">
+                        <span>Ver esquemas</span>
+                        <i class="fa-solid fa-circle-arrow-right ml-auto text-lg"></i>
+                    </div>
+                </div>
+
+                <!-- Card 4: Diagramas -->
+                <div onclick="switchTab('diagramas')" class="group cursor-pointer bg-slate-900/80 border border-slate-800 hover:border-blue-500/50 rounded-xl p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-950/50 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-blue-950/60 border border-blue-500/30 text-blue-400 flex items-center justify-center text-2xl mb-4 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                            <i class="fa-solid fa-file-invoice"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">Diagramas</h3>
+                        <p class="text-gray-400 text-xs leading-relaxed">Vistas, despieces y esquemas mecánicos de motor/caja.</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800/60 flex items-center text-blue-400 text-sm font-semibold group-hover:translate-x-1 transition-transform">
+                        <span>Ver diagramas</span>
+                        <i class="fa-solid fa-circle-arrow-right ml-auto text-lg"></i>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODELS AND RECENT ITEMS DUAL ROW -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                <!-- Modelos IVECO Grid (2 Columns in LG) -->
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-truck text-blue-500 text-lg"></i>
+                            <h2 class="text-lg font-bold text-white">Modelos IVECO</h2>
+                        </div>
+                        <button onclick="resetFilters()" class="text-xs text-blue-400 hover:text-blue-300 font-medium flex items-center gap-1">
+                            Ver todos <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="modelsGrid">
+                        <!-- Daily -->
+                        <div onclick="filterByModel('Daily')" class="bg-slate-900/90 border border-slate-800 hover:border-blue-500/60 rounded-xl p-3 text-center cursor-pointer group transition-all hover:bg-slate-800/50">
+                            <div class="h-28 rounded-lg bg-gray-950 border border-gray-800 overflow-hidden mb-3 flex items-center justify-center relative">
+                                <img src="https://images.unsplash.com/photo-1559297434-fae8a1916a79?auto=format&fit=crop&w=400&q=80" alt="Daily" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-80 group-hover:opacity-100">
+                                <span class="absolute top-1 right-1 bg-blue-600/80 text-[10px] font-bold text-white px-1.5 py-0.5 rounded">F1A/F1C</span>
+                            </div>
+                            <div class="font-bold text-white group-hover:text-blue-400 transition-colors">Daily</div>
+                            <div class="text-[11px] text-gray-400 mt-0.5">2000 - Actualidad</div>
+                        </div>
+
+                        <!-- Eurocargo -->
+                        <div onclick="filterByModel('Eurocargo')" class="bg-slate-900/90 border border-slate-800 hover:border-blue-500/60 rounded-xl p-3 text-center cursor-pointer group transition-all hover:bg-slate-800/50">
+                            <div class="h-28 rounded-lg bg-gray-950 border border-gray-800 overflow-hidden mb-3 flex items-center justify-center relative">
+                                <img src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=400&q=80" alt="Eurocargo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-80 group-hover:opacity-100">
+                                <span class="absolute top-1 right-1 bg-blue-600/80 text-[10px] font-bold text-white px-1.5 py-0.5 rounded">Tector 4/6</span>
+                            </div>
+                            <div class="font-bold text-white group-hover:text-blue-400 transition-colors">Eurocargo</div>
+                            <div class="text-[11px] text-gray-400 mt-0.5">1991 - Actualidad</div>
+                        </div>
+
+                        <!-- Stralis -->
+                        <div onclick="filterByModel('Stralis')" class="bg-slate-900/90 border border-slate-800 hover:border-blue-500/60 rounded-xl p-3 text-center cursor-pointer group transition-all hover:bg-slate-800/50">
+                            <div class="h-28 rounded-lg bg-gray-950 border border-gray-800 overflow-hidden mb-3 flex items-center justify-center relative">
+                                <img src="https://images.unsplash.com/photo-1586191582056-a3306d15a77f?auto=format&fit=crop&w=400&q=80" alt="Stralis" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-80 group-hover:opacity-100">
+                                <span class="absolute top-1 right-1 bg-blue-600/80 text-[10px] font-bold text-white px-1.5 py-0.5 rounded">Cursor 8/10/13</span>
+                            </div>
+                            <div class="font-bold text-white group-hover:text-blue-400 transition-colors">Stralis</div>
+                            <div class="text-[11px] text-gray-400 mt-0.5">2002 - 2012</div>
+                        </div>
+
+                        <!-- Tector -->
+                        <div onclick="filterByModel('Tector')" class="bg-slate-900/90 border border-slate-800 hover:border-blue-500/60 rounded-xl p-3 text-center cursor-pointer group transition-all hover:bg-slate-800/50">
+                            <div class="h-28 rounded-lg bg-gray-950 border border-gray-800 overflow-hidden mb-3 flex items-center justify-center relative">
+                                <img src="https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=400&q=80" alt="Tector" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-80 group-hover:opacity-100">
+                                <span class="absolute top-1 right-1 bg-blue-600/80 text-[10px] font-bold text-white px-1.5 py-0.5 rounded">NEF 4.5/6.7</span>
+                            </div>
+                            <div class="font-bold text-white group-hover:text-blue-400 transition-colors">Tector</div>
+                            <div class="text-[11px] text-gray-400 mt-0.5">2006 - Actualidad</div>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Results Section (Shows when search or filters active) -->
+                    <div id="dynamicResultsContainer" class="pt-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 id="resultsTitle" class="text-base font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-list-check text-blue-500"></i>
+                                Documentos Disponibles
+                            </h3>
+                            <span id="resultsCount" class="text-xs bg-gray-800 text-gray-300 px-2.5 py-1 rounded-full border border-gray-700">6 elementos</span>
+                        </div>
+
+                        <!-- Cards Grid for Search/Tab Results -->
+                        <div id="resultsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <!-- Items injected via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Últimos Agregados Sidebar Panel -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left text-blue-500 text-lg"></i>
+                            <h2 class="text-lg font-bold text-white">Últimos agregados</h2>
+                        </div>
+                        <button onclick="switchTab('historial')" class="text-xs text-blue-400 hover:text-blue-300 font-medium flex items-center gap-1">
+                            Ver todos <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </button>
+                    </div>
+
+                    <div class="bg-slate-900/90 border border-slate-800 rounded-xl divide-y divide-slate-800/80 overflow-hidden shadow-xl" id="recentList">
+                        <!-- Item 1 -->
+                        <div onclick="openDetailModal(1)" class="p-3.5 hover:bg-slate-800/60 cursor-pointer transition-colors flex items-start gap-3 group">
+                            <div class="p-2.5 bg-blue-950/60 border border-blue-500/20 text-blue-400 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                <i class="fa-solid fa-file-lines text-base"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="font-semibold text-sm text-gray-200 group-hover:text-blue-400 truncate">Manual de Taller - Iveco Daily 3.0</div>
+                                <div class="text-xs text-gray-400 mt-0.5">Daily (2006 - 2014) · Motor F1C</div>
+                            </div>
+                            <span class="text-[11px] text-gray-500 font-mono shrink-0">12/08/2026</span>
+                        </div>
+
+                        <!-- Item 2 -->
+                        <div onclick="openDetailModal(2)" class="p-3.5 hover:bg-slate-800/60 cursor-pointer transition-colors flex items-start gap-3 group">
+                            <div class="p-2.5 bg-blue-950/60 border border-blue-500/20 text-blue-400 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                <i class="fa-solid fa-microchip text-base"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="font-semibold text-sm text-gray-200 group-hover:text-blue-400 truncate">Pinout ECU Bosch EDC16C39</div>
+                                <div class="text-xs text-gray-400 mt-0.5">Stralis / Daily / Tector Euro 4</div>
+                            </div>
+                            <span class="text-[11px] text-gray-500 font-mono shrink-0">10/08/2026</span>
+                        </div>
+
+                        <!-- Item 3 -->
+                        <div onclick="openDetailModal(3)" class="p-3.5 hover:bg-slate-800/60 cursor-pointer transition-colors flex items-start gap-3 group">
+                            <div class="p-2.5 bg-blue-950/60 border border-blue-500/20 text-blue-400 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                <i class="fa-solid fa-bolt text-base"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="font-semibold text-sm text-gray-200 group-hover:text-blue-400 truncate">Esquema Eléctrico - Eurocargo</div>
+                                <div class="text-xs text-gray-400 mt-0.5">Eurocargo (1991 - 2015) · Centralita</div>
+                            </div>
+                            <span class="text-[11px] text-gray-500 font-mono shrink-0">08/08/2026</span>
+                        </div>
+
+                        <!-- Item 4 -->
+                        <div onclick="openDetailModal(4)" class="p-3.5 hover:bg-slate-800/60 cursor-pointer transition-colors flex items-start gap-3 group">
+                            <div class="p-2.5 bg-blue-950/60 border border-blue-500/20 text-blue-400 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                <i class="fa-solid fa-wrench text-base"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="font-semibold text-sm text-gray-200 group-hover:text-blue-400 truncate">Manual de Reparación - Iveco Tector</div>
+                                <div class="text-xs text-gray-400 mt-0.5">Tector (2006 - 2021) · Torque de Tapa</div>
+                            </div>
+                            <span class="text-[11px] text-gray-500 font-mono shrink-0">05/08/2026</span>
+                        </div>
+
+                        <!-- Item 5 -->
+                        <div onclick="openDetailModal(5)" class="p-3.5 hover:bg-slate-800/60 cursor-pointer transition-colors flex items-start gap-3 group">
+                            <div class="p-2.5 bg-blue-950/60 border border-blue-500/20 text-blue-400 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                <i class="fa-solid fa-boxes-packing text-base"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="font-semibold text-sm text-gray-200 group-hover:text-blue-400 truncate">Caja de Fusibles y Relés Daily</div>
+                                <div class="text-xs text-gray-400 mt-0.5">Daily 55C16 · Esquema de fusibles</div>
+                            </div>
+                            <span class="text-[11px] text-gray-500 font-mono shrink-0">01/08/2026</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-gray-900 border-t border-gray-800 px-6 py-3 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-400 gap-2 shrink-0">
+        <div class="flex items-center gap-3">
+            <span class="font-black tracking-wider text-white">T.R.I <span class="text-blue-500">DATA</span></span>
+            <span class="text-gray-600">|</span>
+            <span>Manuales</span>
+            <span class="text-gray-600">|</span>
+            <span>Pinouts</span>
+            <span class="text-gray-600">|</span>
+            <span>Iveco</span>
+        </div>
+        <div class="flex items-center gap-2 text-gray-400 font-medium">
+            <span>Rápido</span>
+            <span class="text-blue-500 font-bold">·</span>
+            <span>Seguro</span>
+            <span class="text-blue-500 font-bold">·</span>
+            <span>Siempre actualizado</span>
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE DETAIL VIEWER MODAL -->
+    <div id="detailModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden my-auto">
+            
+            <!-- Modal Header -->
+            <div class="bg-gray-900 border-b border-gray-800 p-4 sm:p-5 flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-3">
+                    <div id="modalCategoryBadge" class="p-2.5 bg-blue-600 text-white rounded-lg text-lg">
+                        <i class="fa-solid fa-microchip"></i>
+                    </div>
+                    <div>
+                        <h2 id="modalTitle" class="text-lg sm:text-xl font-bold text-white">Pinout ECU Bosch EDC16C39</h2>
+                        <div id="modalSubtitle" class="text-xs text-blue-400 font-medium">Iveco Daily 3.0 / Stralis Euro 4</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="modalFavBtn" onclick="toggleFavoriteCurrent()" class="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-amber-400 transition-colors">
+                        <i class="fa-regular fa-star text-lg"></i>
+                    </button>
+                    <button onclick="closeDetailModal()" class="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white transition-colors">
+                        <i class="fa-solid fa-xmark text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Body (Scrollable) -->
+            <div class="p-5 overflow-y-auto space-y-6 custom-scrollbar text-sm flex-1">
+                
+                <!-- Quick Meta Pills -->
+                <div class="flex flex-wrap gap-2 text-xs">
+                    <span id="modalMetaModel" class="bg-slate-800 border border-slate-700 text-gray-300 px-3 py-1 rounded-full font-medium">
+                        <i class="fa-solid fa-truck text-blue-400 mr-1"></i> Modelo: Daily 3.0 HPI
+                    </span>
+                    <span id="modalMetaYear" class="bg-slate-800 border border-slate-700 text-gray-300 px-3 py-1 rounded-full font-medium">
+                        <i class="fa-solid fa-calendar text-blue-400 mr-1"></i> Año: 2006 - 2014
+                    </span>
+                    <span id="modalMetaSystem" class="bg-slate-800 border border-slate-700 text-gray-300 px-3 py-1 rounded-full font-medium">
+                        <i class="fa-solid fa-gear text-blue-400 mr-1"></i> Sistema: Bosch Common Rail EDC16
+                    </span>
+                </div>
+
+                <!-- Interactive Connector Pinout Visualizer Block -->
+                <div id="pinoutVisualizerSection" class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-3">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <span class="font-bold text-white text-xs uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-plug text-blue-500"></i> Diagrama Interactivo de Pines ECU (Conector A - 60 Pines)
+                        </span>
+                        <span class="text-[11px] text-gray-400">Hacé click en un pin para ver el detalle</span>
+                    </div>
+
+                    <!-- Visual Connector Grid -->
+                    <div class="grid grid-cols-10 gap-1.5 p-3 bg-slate-900 border border-slate-800 rounded-lg" id="connectorGrid">
+                        <!-- Pins rendered via JavaScript -->
+                    </div>
+
+                    <!-- Selected Pin Detail Card -->
+                    <div id="pinDetailCard" class="bg-blue-950/40 border border-blue-500/30 rounded-lg p-3 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div class="flex items-center gap-3">
+                            <div id="pinBadge" class="w-8 h-8 rounded-md bg-blue-600 text-white font-bold flex items-center justify-center text-sm">
+                                A01
+                            </div>
+                            <div>
+                                <div id="pinFunction" class="font-bold text-white text-sm">Alimentación Principal +12V (Relé Principal)</div>
+                                <div id="pinWireColor" class="text-gray-400">Color de cable: <span class="text-red-400 font-semibold">Rojo / Blanco</span> · Terminal A1</div>
+                            </div>
+                        </div>
+                        <div id="pinVoltage" class="bg-slate-900 px-3 py-1.5 rounded border border-slate-700 text-amber-400 font-mono font-bold text-right">
+                            Voltaje: 12.0V - 14.2V
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Technical Content Tabs inside Modal -->
+                <div class="border-b border-gray-800 flex gap-4 text-xs font-bold text-gray-400">
+                    <button id="modalTab1" onclick="switchModalTab('desc')" class="pb-2 text-blue-400 border-b-2 border-blue-500 flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-info"></i> Descripción y Especificaciones
+                    </button>
+                    <button id="modalTab2" onclick="switchModalTab('tabla')" class="pb-2 hover:text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-table-list"></i> Tabla Completa de Valores
+                    </button>
+                    <button id="modalTab3" onclick="switchModalTab('dtc')" class="pb-2 hover:text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Códigos de Falla (DTC OBD2)
+                    </button>
+                </div>
+
+                <!-- Modal Section Content: Description -->
+                <div id="modalContentDesc" class="space-y-3 text-gray-300 text-xs sm:text-sm leading-relaxed">
+                    <p id="modalDescriptionText">
+                        El sistema de inyección Bosch EDC16C39 gestiona el motor F1C de 3.0 litros Common Rail en los vehículos Iveco Daily. Contiene dos conectores principales: Conector A (Vehículo - 60 pines) y Conector B (Motor - 94 pines).
+                    </p>
+
+                    <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-4 space-y-2">
+                        <h4 class="font-bold text-white text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-wrench text-amber-400"></i> Torques de Apriete Recomendados
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                            <div class="flex justify-between bg-slate-900 p-2 rounded border border-slate-800">
+                                <span class="text-gray-400">Tapa de Cilindros:</span>
+                                <span class="font-mono text-blue-400 font-bold">60 Nm + 90° + 90°</span>
+                            </div>
+                            <div class="flex justify-between bg-slate-900 p-2 rounded border border-slate-800">
+                                <span class="text-gray-400">Inyectores Diesel:</span>
+                                <span class="font-mono text-blue-400 font-bold">28 Nm</span>
+                            </div>
+                            <div class="flex justify-between bg-slate-900 p-2 rounded border border-slate-800">
+                                <span class="text-gray-400">Bomba de Alta Presión:</span>
+                                <span class="font-mono text-blue-400 font-bold">50 Nm</span>
+                            </div>
+                            <div class="flex justify-between bg-slate-900 p-2 rounded border border-slate-800">
+                                <span class="text-gray-400">Sensor de Presión Rampa:</span>
+                                <span class="font-mono text-blue-400 font-bold">35 Nm</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Section Content: Full Table -->
+                <div id="modalContentTabla" class="hidden overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-slate-800 text-gray-300 border-b border-slate-700">
+                                <th class="p-2.5 font-bold">Pin</th>
+                                <th class="p-2.5 font-bold">Función / Señal</th>
+                                <th class="p-2.5 font-bold">Color Cable</th>
+                                <th class="p-2.5 font-bold">Valor Nominal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modalTableBody" class="divide-y divide-slate-800 text-gray-300">
+                            <!-- Dynamic Table Rows -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Modal Section Content: DTC Error Codes -->
+                <div id="modalContentDtc" class="hidden space-y-2">
+                    <div class="text-xs text-gray-400 mb-2">Códigos de error frecuentes detectados en la computadora Bosch Iveco:</div>
+                    <div class="space-y-2" id="modalDtcList">
+                        <!-- Dynamic DTC list -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="bg-gray-900 border-t border-gray-800 p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
+                <div class="text-xs text-gray-400 flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-blue-400"></i>
+                    <span>Información verificada para taller de diagnóstico Iveco.</span>
+                </div>
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <button onclick="downloadPdfSimulated()" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-semibold px-4 py-2 rounded-lg text-xs transition-colors flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-file-pdf text-sm"></i>
+                        <span>Descargar PDF Técnico</span>
+                    </button>
+                    <button onclick="closeDetailModal()" class="w-full sm:w-auto bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium px-4 py-2 rounded-lg text-xs transition-colors">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // IVECO Technical Database
+        const ivecoDatabase = [
+            {
+                id: 1,
+                title: "Manual de Taller - Iveco Daily 3.0",
+                category: "manuales",
+                model: "Daily",
+                year: "2006 - 2014",
+                system: "Motor F1C HPI / HPT 3.0L",
+                date: "12/08/2026",
+                icon: "fa-book-open",
+                description: "Manual completo de taller, despiece, torques de apriete de motor F1C, calado de distribución por cadena, esquemas de lubricación y sistema de combustible Common Rail.",
+                pinoutData: [
+                    { pin: "A01", name: "Alimentación +12V Directo Batería", color: "Rojo/Blanco", voltage: "12.0V - 14.2V" },
+                    { pin: "A02", name: "Masa de Control ECU", color: "Negro", voltage: "0.0V" },
+                    { pin: "A03", name: "Señal Pedal Acelerador P1", color: "Verde/Amarillo", voltage: "0.5V - 4.5V" },
+                    { pin: "A04", name: "Señal Sensor Presión Rail", color: "Blanco/Azul", voltage: "0.5V - 4.8V" },
+                    { pin: "A05", name: "Inyector Cilindro 1 High", color: "Marrón", voltage: "Pulse 80V Peak" },
+                    { pin: "A06", name: "Inyector Cilindro 1 Low", color: "Marrón/Negro", voltage: "GND Control" },
+                    { pin: "A07", name: "Línea CAN-H Bus Diagnóstico", color: "Azul/Blanco", voltage: "2.5V - 3.5V" },
+                    { pin: "A08", name: "Línea CAN-L Bus Diagnóstico", color: "Azul", voltage: "1.5V - 2.5V" },
+                    { pin: "A09", name: "Control Relé Bomba Combustible", color: "Gris/Rojo", voltage: "0V / 12V" },
+                    { pin: "A10", name: "Sensor Temperatura Refrigerante", color: "Rosa/Negro", voltage: "0.2V - 4.8V" }
+                ],
+                dtcs: [
+                    { code: "EDC 0001", title: "Falla Presión de Rail Fuera de Tolerancia", solution: "Revisar regulador de presión en bomba alta y filtro de combustible." },
+                    { code: "EDC 0089", title: "Válvula Reguladora M-Prop Cortocircuito", solution: "Comprobar arnés del conector del solenoide M-Prop." },
+                    { code: "EDC 0238", title: "Señal Presión de Sobrealimentación Invalida", solution: "Inspeccionar sensor MAP en colector de admisión y fugas de intercooler." }
+                ]
+            },
+            {
+                id: 2,
+                title: "Pinout ECU Bosch EDC16C39",
+                category: "pinouts",
+                model: "Stralis",
+                year: "2007 - 2012",
+                system: "Bosch EDC16C39 - Cursor & Daily",
+                date: "10/08/2026",
+                icon: "fa-microchip",
+                description: "Esquema de conexiones pin por pin de la centralita Bosch EDC16C39 de vehículos Iveco Stralis, Daily y Tector. Incluye colores de cables original Iveco y tensiones de referencia.",
+                pinoutData: [
+                    { pin: "A01", name: "Alimentación Principal +12V (Relé Principal)", color: "Rojo/Blanco", voltage: "12.0V - 14.2V" },
+                    { pin: "A02", name: "Masa de Potencia 1", color: "Marrón Oscuro", voltage: "0.0V" },
+                    { pin: "A03", name: "Línea K-Line Diagnóstico OBD2", color: "Amarillo/Negro", voltage: "12.0V Pulsante" },
+                    { pin: "A04", name: "CAN High VCM/BC", color: "Verde/Blanco", voltage: "2.7V" },
+                    { pin: "A05", name: "CAN Low VCM/BC", color: "Verde", voltage: "2.3V" },
+                    { pin: "A06", name: "Sensor Posición Cigüeñal (+)", color: "Blanco", voltage: "AC Frecuencia" },
+                    { pin: "A07", name: "Sensor Posición Cigüeñal (-)", color: "Negro", voltage: "AC Referencia" },
+                    { pin: "A08", name: "Sensor Presión Aire Admisión", color: "Naranja", voltage: "1.0V - 4.2V" },
+                    { pin: "A09", name: "Comando Electroválvula VGT", color: "Azul/Rojo", voltage: "PWM 12V" },
+                    { pin: "A10", name: "Interruptor Freno Principal", color: "Violeta", voltage: "0V / 12V" }
+                ],
+                dtcs: [
+                    { code: "P0190", title: "Circuito Sensor Presión Rampa Combustible", solution: "Verificar voltaje de alimentación de 5.0V en Pin A04 del conector." },
+                    { code: "P0201", title: "Circuito Inyector Cilindro 1 Abierto", solution: "Verificar resistencia del inyector (0.2 - 0.5 Ohms piezoeléctrico/solenoide)." }
+                ]
+            },
+            {
+                id: 3,
+                title: "Esquema Eléctrico - Eurocargo",
+                category: "esquemas",
+                model: "Eurocargo",
+                year: "1991 - 2015",
+                system: "Centralita Eléctrica & Cuadro de Instrumentos",
+                date: "08/08/2026",
+                icon: "fa-bolt",
+                description: "Diagramas eléctricos completos del sistema de arranque, carga con alternador, centralita de fusibles de cabina, freno de motor e iluminación para Iveco Eurocargo.",
+                pinoutData: [
+                    { pin: "A01", name: "Señal Alternador B+ Carga", color: "Rojo Grueso", voltage: "24.0V - 28.0V" },
+                    { pin: "A02", name: "Comando Solenoide Arranque", color: "Violeta/Blanco", voltage: "24.0V en Cárter" },
+                    { pin: "A03", name: "Masa Chasis Cabina", color: "Negro", voltage: "0.0V" },
+                    { pin: "A04", name: "Alimentación Tacógrafo digital", color: "Rojo/Amarillo", voltage: "24.0V Continuo" }
+                ],
+                dtcs: [
+                    { code: "SYS 0102", title: "Falla de Comunicación CAN Cuadro / VCM", solution: "Verificar resistencia de terminación de 60 Ohms entre CAN-H y CAN-L." }
+                ]
+            },
+            {
+                id: 4,
+                title: "Manual de Reparación - Iveco Tector",
+                category: "manuales",
+                model: "Tector",
+                year: "2006 - 2021",
+                system: "Motor NEF 4 y 6 Cilindros (F4AE / F4TEE)",
+                date: "05/08/2026",
+                icon: "fa-wrench",
+                description: "Manual de reparación mecánica y overhaul del motor Iveco Tector NEF 4.5L y 6.7L. Secuencia de apriete de bancada, bielas, juego de válvulas y bomba alta presión Bosch CP3.",
+                pinoutData: [
+                    { pin: "A01", name: "M-Prop Regulador Bomba CP3 (+)", color: "Rojo", voltage: "12V PWM" },
+                    { pin: "A02", name: "M-Prop Regulador Bomba CP3 (-)", color: "Negro/Verde", voltage: "Masa Modulada" }
+                ],
+                dtcs: [
+                    { code: "DTC 0141", title: "Sincronización Árbol de Levas / Cigüeñal Incorrecta", solution: "Comprobar calado de distribución mecánica y sensores hall." }
+                ]
+            },
+            {
+                id: 5,
+                title: "Caja de Fusibles y Relés Daily 55C16",
+                category: "esquemas",
+                model: "Daily",
+                year: "2008 - 2018",
+                system: "Body Computer & Fuse Box Cabina/Chasis",
+                date: "01/08/2026",
+                icon: "fa-boxes-packing",
+                description: "Ubicación de fusibles F1 a F55 y relés R1 a R15 en la fusiblera de cabina bajo tablero para Daily 55C16. Asignación de amperajes, funciones e iluminación.",
+                pinoutData: [
+                    { pin: "F01", name: "Fusible 15A - Luces Altas", color: "Azul 15A", voltage: "12.0V" },
+                    { pin: "F02", name: "Fusible 10A - Unidad Control ECU EDC", color: "Rojo 10A", voltage: "12.0V Bajo Llave" },
+                    { pin: "F03", name: "Fusible 30A - Motor Limpiaparabrisas", color: "Verde 30A", voltage: "12.0V" }
+                ],
+                dtcs: [
+                    { code: "BC 0045", title: "Circuito Cortado Relé Faros Antiniebla", solution: "Revisar fusible F12 y estado del relé R4." }
+                ]
+            },
+            {
+                id: 6,
+                title: "Diagrama Despiece Motor Cursor 13 Stralis",
+                category: "diagramas",
+                model: "Stralis",
+                year: "2004 - 2014",
+                system: "Motor Cursor 13 Euro 3 / Euro 5",
+                date: "28/07/2026",
+                icon: "fa-diagram-project",
+                description: "Vistas explosionadas y números de parte para el bloque motor Cursor 13, inyectores bomba PDE, freno de motor Turbo Brake (ITB) y distribución por piñones traseros.",
+                pinoutData: [
+                    { pin: "A01", name: "Electroválvula Freno de Motor ITB", color: "Amarillo", voltage: "24.0V" }
+                ],
+                dtcs: [
+                    { code: "ENGINE 042", title: "Solenoide Freno de Motor Abierto", solution: "Verificar continuidad de bobina de actuador hidráulico en culata." }
+                ]
+            }
+        ];
+
+        // Favorites state stored in LocalStorage
+        let favoriteIds = JSON.parse(localStorage.getItem('tri_iveco_favs') || '[2, 5]');
+        let currentTab = 'inicio';
+        let currentFilterModel = null;
+        let currentSearchQuery = '';
+        let activeItemForModal = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            updateFavBadge();
+            renderResults();
+        });
+
+        function updateFavBadge() {
+            const badge = document.getElementById('favCountBadge');
+            if (badge) badge.innerText = favoriteIds.length;
+        }
+
+        function switchTab(tabName) {
+            currentTab = tabName;
+            currentFilterModel = null;
+
+            // Update UI nav buttons active style
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white', 'shadow-lg', 'shadow-blue-600/30');
+                btn.classList.add('text-gray-400', 'hover:text-white', 'hover:bg-gray-800/60');
+            });
+
+            const activeBtn = document.getElementById(`nav-${tabName}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-gray-400', 'hover:text-white', 'hover:bg-gray-800/60');
+                activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow-lg', 'shadow-blue-600/30');
+            }
+
+            // Toggle visual category cards display
+            const catCards = document.getElementById('categoryCards');
+            if (tabName === 'inicio') {
+                catCards.classList.remove('hidden');
+            } else {
+                catCards.classList.add('hidden');
+            }
+
+            renderResults();
+        }
+
+        function filterByModel(modelName) {
+            currentFilterModel = modelName;
+            switchTab('inicio');
+            renderResults();
+        }
+
+        function resetFilters() {
+            currentFilterModel = null;
+            currentSearchQuery = '';
+            document.getElementById('searchInput').value = '';
+            document.getElementById('clearBtn').classList.add('hidden');
+            switchTab('inicio');
+        }
+
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            currentSearchQuery = query;
+
+            const clearBtn = document.getElementById('clearBtn');
+            if (query.length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+
+            renderResults();
+        }
+
+        function triggerSearch() {
+            handleSearch();
+        }
+
+        function setSearch(term) {
+            document.getElementById('searchInput').value = term;
+            handleSearch();
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            currentSearchQuery = '';
+            document.getElementById('clearBtn').classList.add('hidden');
+            renderResults();
+        }
+
+        function renderResults() {
+            const resultsGrid = document.getElementById('resultsGrid');
+            const resultsTitle = document.getElementById('resultsTitle');
+            const resultsCount = document.getElementById('resultsCount');
+
+            let filtered = ivecoDatabase.filter(item => {
+                // Category tab filter
+                if (currentTab === 'manuales' && item.category !== 'manuales') return false;
+                if (currentTab === 'pinouts' && item.category !== 'pinouts') return false;
+                if (currentTab === 'esquemas' && item.category !== 'esquemas') return false;
+                if (currentTab === 'diagramas' && item.category !== 'diagramas') return false;
+                if (currentTab === 'favoritos' && !favoriteIds.includes(item.id)) return false;
+                if (currentTab === 'historial') return true; // Show all for demo
+
+                // Model filter
+                if (currentFilterModel && item.model.toLowerCase() !== currentFilterModel.toLowerCase()) return false;
+
+                // Text search query
+                if (currentSearchQuery) {
+                    const q = currentSearchQuery.toLowerCase();
+                    const matchTitle = item.title.toLowerCase().includes(q);
+                    const matchDesc = item.description.toLowerCase().includes(q);
+                    const matchModel = item.model.toLowerCase().includes(q);
+                    const matchSystem = item.system.toLowerCase().includes(q);
+                    return matchTitle || matchDesc || matchModel || matchSystem;
+                }
+
+                return true;
+            });
+
+            // Update Header title
+            let titleText = "Documentos Disponibles";
+            if (currentFilterModel) titleText = `Documentos para Iveco ${currentFilterModel}`;
+            else if (currentTab === 'favoritos') titleText = "Mis Favoritos Guardados";
+            else if (currentTab === 'manuales') titleText = "Manuales Técnicos de Taller";
+            else if (currentTab === 'pinouts') titleText = "Diagramas de Pinout ECU y Módulos";
+            else if (currentTab === 'esquemas') titleText = "Esquemas Eléctricos y Fusibles";
+            else if (currentTab === 'diagramas') titleText = "Diagramas Mecánicos y Despieces";
+
+            resultsTitle.innerHTML = `<i class="fa-solid fa-list-check text-blue-500"></i> ${titleText}`;
+            resultsCount.innerText = `${filtered.length} elemento${filtered.length !== 1 ? 's' : ''}`;
+
+            if (filtered.length === 0) {
+                resultsGrid.innerHTML = `
+                    <div class="col-span-2 bg-slate-900/60 border border-slate-800 rounded-xl p-8 text-center space-y-3">
+                        <i class="fa-solid fa-folder-open text-4xl text-gray-600"></i>
+                        <div class="text-white font-bold text-base">No se encontraron manuales o pinouts</div>
+                        <p class="text-xs text-gray-400 max-w-sm mx-auto">Prueba buscando con otros términos como "Daily", "EDC16", "Fusibles" o "Cursor".</p>
+                        <button onclick="resetFilters()" class="inline-block bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors">
+                            Restablecer Filtros
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            resultsGrid.innerHTML = filtered.map(item => {
+                const isFav = favoriteIds.includes(item.id);
+                return `
+                    <div onclick="openDetailModal(${item.id})" class="bg-slate-900/80 border border-slate-800 hover:border-blue-500/50 rounded-xl p-4 cursor-pointer transition-all hover:bg-slate-800/40 group flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-start justify-between gap-2 mb-2">
+                                <span class="bg-blue-950/80 border border-blue-500/30 text-blue-400 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
+                                    ${item.category}
+                                </span>
+                                <button onclick="event.stopPropagation(); toggleFavorite(${item.id})" class="text-gray-600 hover:text-amber-400 p-1 transition-colors">
+                                    <i class="fa-${isFav ? 'solid' : 'regular'} fa-star text-amber-400 text-base"></i>
+                                </button>
+                            </div>
+                            <h4 class="font-bold text-white text-sm group-hover:text-blue-400 transition-colors line-clamp-1">${item.title}</h4>
+                            <div class="text-xs text-blue-300 font-medium mt-0.5">${item.model} · ${item.year}</div>
+                            <p class="text-gray-400 text-xs mt-2 line-clamp-2 leading-relaxed">${item.description}</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs text-gray-400">
+                            <span class="flex items-center gap-1.5"><i class="fa-solid fa-gears text-gray-500"></i> ${item.system.split(' ')[0]}</span>
+                            <span class="text-blue-400 font-semibold group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                                Abrir <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleFavorite(id) {
+            if (favoriteIds.includes(id)) {
+                favoriteIds = favoriteIds.filter(favId => favId !== id);
+            } else {
+                favoriteIds.push(id);
+            }
+            localStorage.setItem('tri_iveco_favs', JSON.stringify(favoriteIds));
+            updateFavBadge();
+            renderResults();
+            if (activeItemForModal && activeItemForModal.id === id) {
+                updateModalFavBtnState();
+            }
+        }
+
+        function toggleFavoriteCurrent() {
+            if (activeItemForModal) {
+                toggleFavorite(activeItemForModal.id);
+            }
+        }
+
+        function updateModalFavBtnState() {
+            if (!activeItemForModal) return;
+            const favBtn = document.getElementById('modalFavBtn');
+            const isFav = favoriteIds.includes(activeItemForModal.id);
+            favBtn.innerHTML = `<i class="fa-${isFav ? 'solid' : 'regular'} fa-star text-lg"></i>`;
+        }
+
+        function openDetailModal(id) {
+            const item = ivecoDatabase.find(x => x.id === id);
+            if (!item) return;
+
+            activeItemForModal = item;
+
+            // Populate Modal Headers
+            document.getElementById('modalTitle').innerText = item.title;
+            document.getElementById('modalSubtitle').innerText = `${item.model} (${item.year}) · ${item.system}`;
+            document.getElementById('modalMetaModel').innerHTML = `<i class="fa-solid fa-truck text-blue-400 mr-1"></i> Modelo: ${item.model}`;
+            document.getElementById('modalMetaYear').innerHTML = `<i class="fa-solid fa-calendar text-blue-400 mr-1"></i> Año: ${item.year}`;
+            document.getElementById('modalMetaSystem').innerHTML = `<i class="fa-solid fa-gear text-blue-400 mr-1"></i> Sistema: ${item.system}`;
+            document.getElementById('modalDescriptionText').innerText = item.description;
+
+            updateModalFavBtnState();
+
+            // Populate Connector Visualizer Pins
+            const grid = document.getElementById('connectorGrid');
+            grid.innerHTML = '';
+            
+            item.pinoutData.forEach((p, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `p-2 rounded font-mono font-bold text-xs transition-all border ${idx === 0 ? 'bg-blue-600 text-white border-blue-400 shadow-md scale-105' : 'bg-slate-800 text-gray-300 border-slate-700 hover:border-blue-500 hover:bg-slate-700'}`;
+                btn.innerText = p.pin;
+                btn.onclick = () => selectPin(p, btn);
+                grid.appendChild(btn);
+            });
+
+            // Select first pin by default
+            if (item.pinoutData.length > 0) {
+                selectPin(item.pinoutData[0], grid.children[0]);
+            }
+
+            // Populate Full Table
+            const tbody = document.getElementById('modalTableBody');
+            tbody.innerHTML = item.pinoutData.map(p => `
+                <tr class="hover:bg-slate-800/50 transition-colors">
+                    <td class="p-2.5 font-mono font-bold text-blue-400">${p.pin}</td>
+                    <td class="p-2.5 font-medium">${p.name}</td>
+                    <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-gray-300 font-mono">${p.color}</span></td>
+                    <td class="p-2.5 font-mono text-amber-400 font-semibold">${p.voltage}</td>
+                </tr>
+            `).join('');
+
+            // Populate DTC Error Codes
+            const dtcContainer = document.getElementById('modalDtcList');
+            dtcContainer.innerHTML = item.dtcs.map(d => `
+                <div class="bg-slate-800/80 border border-slate-700 rounded-lg p-3">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="bg-red-950/80 border border-red-500/40 text-red-400 font-mono font-bold text-xs px-2 py-0.5 rounded">
+                            ${d.code}
+                        </span>
+                        <span class="font-bold text-white text-xs">${d.title}</span>
+                    </div>
+                    <div class="text-xs text-gray-300 pl-1 border-l-2 border-amber-500 mt-1">
+                        <span class="font-semibold text-amber-400">Solución / Diagnóstico:</span> ${d.solution}
+                    </div>
+                </div>
+            `).join('');
+
+            switchModalTab('desc');
+
+            // Show Modal
+            document.getElementById('detailModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function selectPin(pinObj, elementBtn) {
+            // Unselect previous
+            document.querySelectorAll('#connectorGrid button').forEach(b => {
+                b.className = 'p-2 rounded font-mono font-bold text-xs transition-all border bg-slate-800 text-gray-300 border-slate-700 hover:border-blue-500 hover:bg-slate-700';
+            });
+            // Select current
+            if (elementBtn) {
+                elementBtn.className = 'p-2 rounded font-mono font-bold text-xs transition-all border bg-blue-600 text-white border-blue-400 shadow-md scale-105';
+            }
+
+            document.getElementById('pinBadge').innerText = pinObj.pin;
+            document.getElementById('pinFunction').innerText = pinObj.name;
+            document.getElementById('pinWireColor').innerHTML = `Color de cable: <span class="text-blue-300 font-semibold">${pinObj.color}</span> · Terminal Conector`;
+            document.getElementById('pinVoltage').innerText = `Voltaje: ${pinObj.voltage}`;
+        }
+
+        function switchModalTab(tabKey) {
+            const desc = document.getElementById('modalContentDesc');
+            const tabla = document.getElementById('modalContentTabla');
+            const dtc = document.getElementById('modalContentDtc');
+
+            const tab1 = document.getElementById('modalTab1');
+            const tab2 = document.getElementById('modalTab2');
+            const tab3 = document.getElementById('modalTab3');
+
+            desc.classList.add('hidden');
+            tabla.classList.add('hidden');
+            dtc.classList.add('hidden');
+
+            [tab1, tab2, tab3].forEach(t => {
+                t.classList.remove('text-blue-400', 'border-b-2', 'border-blue-500');
+            });
+
+            if (tabKey === 'desc') {
+                desc.classList.remove('hidden');
+                tab1.classList.add('text-blue-400', 'border-b-2', 'border-blue-500');
+            } else if (tabKey === 'tabla') {
+                tabla.classList.remove('hidden');
+                tab2.classList.add('text-blue-400', 'border-b-2', 'border-blue-500');
+            } else if (tabKey === 'dtc') {
+                dtc.classList.remove('hidden');
+                tab3.classList.add('text-blue-400', 'border-b-2', 'border-blue-500');
+            }
+        }
+
+        function downloadPdfSimulated() {
+            if (!activeItemForModal) return;
+            
+            // Create dummy download notification
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-5 right-5 bg-blue-600 text-white font-semibold text-xs px-4 py-3 rounded-xl shadow-2xl z-50 flex items-center gap-2 animate-bounce';
+            toast.innerHTML = `<i class="fa-solid fa-circle-check text-lg"></i> Descargando PDF: ${activeItemForModal.title}.pdf`;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

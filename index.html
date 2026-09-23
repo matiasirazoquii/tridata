@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S!MPLO IVECO - Edición Iveco Only</title>
+<style>
+:root{--red:#c41212;--dark:#1a1a1a;--gray:#2a2a2a;--light:#e5e5e5;--yellow:#ffcc00}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,Roboto,Arial}
+body{background:#111;color:#eee;display:flex;height:100vh}
+#sidebar{width:300px;background:var(--dark);border-right:2px solid var(--red);display:flex;flex-direction:column}
+#logo{background:var(--red);padding:15px;text-align:center;font-weight:900;letter-spacing:2px;font-size:20px}
+#search{padding:10px}
+#search input{width:100%;padding:10px;background:#222;border:1px solid #444;color:#fff;border-radius:4px}
+#models{overflow-y:auto;flex:1}
+.model{padding:10px 15px;border-bottom:1px solid #222;cursor:pointer}
+.model:hover{background:#222}
+.model b{color:var(--yellow);font-size:13px;display:block}
+.model span{font-size:11px;color:#999}
+.model.active{background:var(--red);color:#fff}
+.model.active span{color:#fff}
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#topbar{background:var(--gray);padding:10px 20px;display:flex;gap:10px;align-items:center;border-bottom:1px solid #333}
+.tab{padding:8px 16px;background:#333;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600}
+.tab.active{background:var(--red);color:#fff}
+#content{flex:1;overflow-y:auto;padding:20px;background:#0e0e0e}
+.card{background:#1e1e1e;border:1px solid #333;border-radius:8px;padding:15px;margin-bottom:15px}
+.card h3{color:var(--yellow);margin-bottom:10px;font-size:14px;text-transform:uppercase;letter-spacing:1px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:#222;color:#aaa;padding:8px;text-align:left}
+td{padding:7px 8px;border-bottom:1px solid #222}
+.pin-c{background:#c41212;color:#fff;padding:2px 6px;border-radius:4px;font-size:11px}
+.diagram{width:100%;height:260px;background:repeating-linear-gradient(0deg,#111 0 20px,#151515 20px 40px);border:1px dashed #444;display:flex;align-items:center;justify-content:center;color:#666;font-family:monospace}
+.badge{display:inline-block;padding:3px 8px;background:#222;border:1px solid #444;border-radius:4px;font-size:11px;margin-right:5px}
+</style>
+</head>
+<body>
+<div id="sidebar">
+<div id="logo">S!MPLO IVECO v2026</div>
+<div id="search"><input id="q" placeholder="Buscar: 70C17, EDC16C39, Stralis..."></div>
+<div id="models"></div>
+</div>
+<div id="main">
+<div id="topbar">
+<div class="tab active" data-t="pinout">PINOUT ECU</div>
+<div class="tab" data-t="wiring">DIAGRAMA</div>
+<div class="tab" data-t="data">DATOS SENSORES</div>
+<div class="tab" data-t="osc">OSCILOGRAMA</div>
+<div class="tab" data-t="torque">DISTRIBUCIÓN</div>
+</div>
+<div id="content"></div>
+</div>
+<script>
+const db=[
+{id:'daily35s14',name:'DAILY 35S14 / 35C14',sub:'2.3 F1AE0481H 136CV - EDC16C39 - 2006/2014',ecu:'Bosch EDC16C39 0 281 011 536',pinout:[
+[1,'Inyector 1','OUT Low Side'],[2,'Inyector 4','OUT Low Side'],[3,'Inyector 2','OUT'],[4,'Inyector 3','OUT'],[13,'Masa ECU','GND'],[22,'+12V Bat','30'],[23,'+12V Contacto','15'],[53,'CAN H','2.6V'],[54,'CAN L','2.3V'],[67,'Masa potencia','GND'],[78,'Sensor CKP +','IN'],[79,'Sensor CMP','IN'],[85,'Válvula EGR','PWM']
+],sensors:{'FRP Ralentí':'280-320 bar','MAF Ralentí':'8-12 g/s','ECT':'85-90°C','Boost':'1.0-1.4 bar'}},
+{id:'daily70c17',name:'DAILY 70C17 / 55-170',sub:'3.0 F1CE3481 170CV - EDC17C52 - 2012/2019',ecu:'Bosch EDC17C52 0 281 020 150',pinout:[
+[1,'Masa','GND'],[2,'Inyector 1','OUT'],[3,'Inyector 2','OUT'],[4,'Inyector 3','OUT'],[5,'Inyector 4','OUT'],[22,'+BATT','30'],[35,'CAN H','BUS'],[36,'CAN L','BUS'],[44,'K-Line','Diag'],[61,'+5V Ref','OUT'],[68,'CKP Señal','IN'],[69,'FRP Señal','0.5-4.5V']
+],sensors:{'FRP Ralentí':'300 bar','FRP Plena':'1600 bar','MAF':'12-18 g/s','VGT':'75-85%'}},
+{id:'daily70c18',name:'DAILY 70C18 / 70-170 Euro6',sub:'3.0 F1CFL411 180CV - EDC17CV41 - 2019/2026',ecu:'Bosch EDC17CV41 0 281 020 251',pinout:[
+[1,'GND 1','Masa'],[2,'GND 2','Masa'],[10,'Iny 1 High','OUT'],[11,'Iny 2 High','OUT'],[23,'+30 Bat','12V'],[24,'+15 Contacto','12V'],[50,'CAN H J1939','BUS'],[51,'CAN L J1939','BUS'],[60,'AdBlue Heater','OUT'],[88,'NOx Sensor','CAN']
+],sensors:{'AdBlue Presión':'5.5 bar','DPF ΔP':'<20 mbar ralentí','EGT':'180-220°C ralentí','Urea Temp':'OK'}},
+{id:'stralis450',name:'STRALIS 450 / 500 Cursor 13',sub:'Cursor 13 450CV - EDC7UC31 - 2014/2023',ecu:'Bosch EDC7UC31 0 281 020 089',pinout:[
+[1,'Conector A - Inyectores','6x OUT'],[2,'Conector B - Cabina','CAN + 30/15'],[3,'Conector C - Sensores','FRP/ECT/Boost'],[A1,'FRP','0-1800 bar'],[B12,'CAN H',''],[B13,'CAN L','']
+],sensors:{'FRP Ralentí':'350 bar','Boost':'2.8 bar max','Rail Limiter':'1800 bar','ECT':'80-95°C'}},
+{id:'tector',name:'TECTOR 170-300 / 240E28',sub:'NEF 6 6.7L - EDC7C4 / EDC17CV56',ecu:'Bosch EDC7C4 / EDC17CV56',pinout:[
+[1,'Inyector 1-6','Low Side'],[10,'+30','Bat'],[20,'Masa','GND'],[40,'CAN H/L','Bus']
+],sensors:{'FRP':'300-
